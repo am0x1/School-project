@@ -1,1 +1,8 @@
-School project.
+MP1: Er med i mp2, ettersom det skulle bare sende en "asis" fil. 
+MP2: Starter unshare konteineren med å kjøre m2-unshareC.sh 
+MP5: MP5 filene er i denne stien (webapp.html + worker.js + sw.js) :
+/eksamen/m1-m2-m5/m2/milp2c/var/www
+
+MP3-MP4:
+Start med å kjøre lagnettverks.sh. Lager ett Dockernettverk som brukes av docker container.
+Når du er inni mp3/mp4 kan container startes med kjorDocker.sh og avsluttes med slett.sh (likt på begge). Statiske filer ligger i: /eksamen/m1-m2-m5/m2/milp2c/var/www
