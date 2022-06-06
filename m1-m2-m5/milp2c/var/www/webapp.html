@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+<title>Web-applikasjon</title>
+<link rel="stylesheet" href="http://localhost:80/styleweb.css">
+</head>
+<body>
+  <h1>The Big DB of full of Poems</h1>
+<form method=POST>
+  <div class="container">
+    <input type="text" placeholder="email" name="email">
+    <input type="password" placeholder="password" name="password">
+    <button type="button" onclick="login(email.value, password.value)">Login</button>                    
+    <button type="button" onclick="logout()">Logout</button>                                        
+    <p id="output"></p>
+  </div>
+</form>
+  <div id="form">
+    <form method=POST>
+      <input type="text" placeholder="Poem ID" name="id_input"><br>
+      <input type="text" placeholder="email" name="email_i"><br>
+      <textarea placeholder="Poem text" name="poem_text" rows="4" cols="50"></textarea><br>
+      <button type="button" onclick="get(id_input.value)">Hent ut ett bestemt dikt / Hent alle dikt</button> 
+      <button type="button" onclick="post(email_i.value, poem_text.value)">Legg til dikt</button>  
+      <button type="button" onclick="put(email_i.value, poem_text.value, id_input.value)">Endre egen dikt</button>                                
+      <button type="button" onclick="del(id_input.value)">Slett eget dikt (gitt dikt id)</button>
+      <button type="button" onclick="delall()">Slett alle egne dikt</button>
+      <button type="submit">SEND</button>
+      <p id="data"></p>
+    </form>
+  </div>
+</div>
+
+<!--Service worker-->
+<!--Kilde:https://anobjectisa.medium.com/javascript-service-worker-basics-254fc256e083-->
+<script>
+// we check if the browser supports ServiceWorkers
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register(
+      // path to the service worker file
+      '/sw.js', {scope: './'}
+    )
+    // the registration is async and it returns a promise
+    .then(function (reg) {
+      console.log('Service worker successfully registered.');
+    })
+    .catch(err => {
+        console.log("Could not register service worker.")
+    }); 
+}
+
+</script>
+
+<!--GET-->
+<script>
+    function get(idi) {
+        let path = "http://localhost:8081/poems/poem/"+idi;
+        fetch(path)
+        .then(response => response.text())
+        .then((response) => {
+            //console.log('Fra x: ', response); 
+            document.getElementById("data").innerHTML = response
+        })
+        .then(res => console.log('From script.js', res))
+        .catch(err => console.log(err))
+    }
+</script>
+<!--Login-->
+<script>
+    function login(email, password){
+        let xml="<login><email>"+email+
+                "</email><passord>"+password+
+                "</passord></login>";
+        
+        let path = "http://localhost:8081/login/";
+        fetch(path, {
+            method:'POST',
+            headers: {
+                "Content-type": "text/xml"
+            }, 
+            body:xml,
+            credentials: 'include'
+        }).then(response => response.text()) 
+          .then((response) => {
+            document.getElementById("output").innerHTML = response;
+          })
+          .catch(err => console.log(err))
+
+          
+    }
+</script>
+
+<!--LOGOUT-->
+<script>
+    function logout(){
+        let path="http://localhost:8081/logout/";
+        fetch(path, {
+            method: 'DELETE', 
+            credentials: 'include'
+        }).then(response => response.text()) 
+        .then((response) => {
+            document.getElementById("output").innerHTML = response;
+          })
+          .catch(err => console.log(err))
+    }
+</script>
+
+<!--POST-->
+<script>
+    function post(email, poemtext){
+        let xml="<poem><poemtext>"+poemtext+ 
+                "</poemtext><email>"+email+ 
+                "</email></poem>";
+
+        let path = "http://localhost:8081/poems/poem/";
+        fetch(path, {
+            method:'POST',
+            headers: {
+                "Content-type": "text/xml"
+            }, 
+            body:xml,
+            credentials: 'include'
+        }).then(response => response.text()) 
+          .then((response) => {
+            document.getElementById("data").innerHTML = response;
+          })
+          .catch(err => console.log(err))
+    }
+</script>
+
+<!--PUT-->
+<script>
+    function put(email, poemtext, id){
+        var xml="<poem><poemtext>" + poemtext + 
+        "</poemtext><email>" + email + 
+        "</email></poem>";
+
+        let path="http://localhost:8081/poems/poem/"+id;
+        fetch(path, {
+            method: 'PUT',
+            headers: {
+                "Content-type": "text/xml"
+            }, 
+            body: xml,
+            credentials: 'include'
+        }).then(response => response.text()) 
+          .then((response) => {
+            document.getElementById("data").innerHTML = response;
+          })
+          .catch(err => console.log(err))
+    }
+</script>
+
+<!--DELETE-->
+<script>
+    function del(idi){
+        let path="http://localhost:8081/poems/poem/"+idi; 
+        fetch(path, {
+            method: 'DELETE', 
+            credentials: 'include'
+        }).then(response => response.text()) 
+        .then((response) => {
+            document.getElementById("data").innerHTML = response;
+          })
+          .catch(err => console.log(err))
+    }
+</script>
+
+<!--DELETEALL-->
+<script>
+    function delall() {
+        let path="http://localhost:8081/poems/poem/"
+        fetch(path, {
+            method: 'DELETE', 
+            credentials: 'include'
+        }).then(response => response.text()) 
+        .then((response) => {
+            document.getElementById("data").innerHTML = response;
+          })
+          .catch(err => console.log(err))
+    }
+</script>
+</body>
+</html>
